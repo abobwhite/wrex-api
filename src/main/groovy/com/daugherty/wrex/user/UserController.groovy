@@ -20,7 +20,16 @@ class UserController {
     try {
       ResponseEntity.ok(userManager.getUserById(userId))
     } catch (WrexException e) {
-      e.errorCode == ERROR_CODE.NOT_FOUND ? ResponseEntity.notFound() : ResponseEntity.badRequest()
+      e.errorCode == ERROR_CODE.NOT_FOUND ? ResponseEntity.notFound().build() : ResponseEntity.badRequest().build()
+    }
+  }
+
+  @GetMapping(value = '/users')
+  ResponseEntity<List<User>> getUsers() {
+    try {
+      ResponseEntity.ok(userManager.getUsers())
+    } catch (WrexException e) {
+      ResponseEntity.badRequest().build()
     }
   }
 }

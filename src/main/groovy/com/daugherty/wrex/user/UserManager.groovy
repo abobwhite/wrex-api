@@ -21,4 +21,8 @@ class UserManager {
 
     user
   }
+
+  List<User> getUsers() {
+    userRepository.findAll()
+  }
 }
