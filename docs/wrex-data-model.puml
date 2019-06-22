@@ -1,0 +1,64 @@
+@startuml
+
+class User {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  hireDate: Date
+  lineOfServiceId: string
+  branchId: string
+  registrationDate: Date
+}
+
+class Branch {
+  id: string
+  name: string
+}
+
+class LineOfService {
+  id: string
+  name: string
+}
+
+class Tag {
+  id: string
+  categoryId: string
+  name: string
+}
+
+class TagCategory {
+  id: string
+  name: string
+}
+
+class UserTag {
+  userId: string
+  tagId: string
+  date: Date
+  count: number
+}
+
+class Recommendation {
+  id: string
+  date: Date
+  userId: string
+  message: string
+  dismissed: boolean
+  feedback: RecommendationFeedback
+}
+
+enum RecommendationFeedback {
+  Liked,
+  Disliked
+}
+
+LineOfService "1" *-- "many" User
+Branch "1" *-- "many" LineOfService
+User "many" -- "many" Tag
+User "1" *-- "many" Recommendation
+TagCategory "1" *-- "many" Tag
+UserTag "1" *-- "many" Tag
+UserTag "1" *-- "many" User
+
+@enduml
