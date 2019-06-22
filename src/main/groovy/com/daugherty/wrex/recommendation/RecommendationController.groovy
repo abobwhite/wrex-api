@@ -1,12 +1,10 @@
 package com.daugherty.wrex.recommendation
 
-import groovy.transform.CompileStatic
+import com.daugherty.wrex.exception.ERROR_CODE
+import com.daugherty.wrex.exception.WrexException
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
-@CompileStatic
 @RestController
 class RecommendationController {
   private final RecommendationManager recommendationManager
@@ -18,5 +16,15 @@ class RecommendationController {
   @GetMapping(value = '/users/{userId}/recommendations')
   ResponseEntity<List<Recommendation>> getRecommendationsForUser(@PathVariable String userId) {
     ResponseEntity.ok(recommendationManager.getRecommendationsForUser(userId))
+  }
+
+  @PatchMapping(value = '/recommendations/{recommendationId}')
+  ResponseEntity<Recommendation> modifyRecommendation(@PathVariable String recommendationId,
+                                                      @RequestBody Recommendation updatedRecommendation) {
+    try {
+      ResponseEntity.ok(recommendationManager.modifyRecommendation(recommendationId, updatedRecommendation))
+    } catch (WrexException e) {
+      e.errorCode == ERROR_CODE.NOT_FOUND ? ResponseEntity.notFound().build() : ResponseEntity.badRequest().build()
+    }
   }
 }
