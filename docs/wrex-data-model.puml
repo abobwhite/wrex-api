@@ -14,17 +14,24 @@ class User {
 class Branch {
   id: string
   name: string
+  abbrev: string
 }
 
 class LineOfService {
   id: string
   name: string
+  abbrev: string
 }
 
 class Tag {
   id: string
-  categoryId: string
+  categories: TagCategoryConfidence[]
   name: string
+}
+
+class TagCategoryConfidence {
+  id: string
+  confidence: number
 }
 
 class TagCategory {
@@ -43,14 +50,23 @@ class Recommendation {
   id: string
   date: Date
   userId: string
+  type: RECOMMENDATION_TYPE
   message: string
   dismissed: boolean
-  feedback: RecommendationFeedback
+  feedback: RECOMMENDATION_FEEDBACK
 }
 
-enum RecommendationFeedback {
-  Liked,
-  Disliked
+enum RECOMMENDATION_FEEDBACK {
+  LIKED,
+  DISLIKED
+}
+
+enum RECOMMENDATION_TYPE {
+  HANGOUT,
+  LEARN,
+  EVENT,
+  MENTORSHIP,
+  OPPORTUNITY
 }
 
 LineOfService "1" *-- "many" User
