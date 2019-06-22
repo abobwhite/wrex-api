@@ -23,11 +23,11 @@ pipeline {
       when { branch 'master' }
       steps {
         echo 'Deploying the latest code...'
-        build job: 'dbs-hackathon-2019-deploy/master', wait: false
+        build job: 'wrex-deploy/master', wait: false
       }
     }
   }
   environment {
-    DOCKER_IMAGE = "abobwhite/dbs-hackathon-2019-api"
+    DOCKER_IMAGE = "abobwhite/wrex-api"
   }
 }
