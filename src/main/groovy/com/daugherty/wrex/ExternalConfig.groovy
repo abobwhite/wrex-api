@@ -12,4 +12,7 @@ class ExternalConfig {
 
   @Value('${wrex.userCorrelations.url}')
   String userCorrelationsUrl
+
+  @Value('${wrex.slack.auth.url}')
+  String slackAccessTokenUrl
 }

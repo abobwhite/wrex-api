@@ -14,3 +14,6 @@ wrex:
     url: http://wrex-nlp:5000/getNouns
   userCorrelations:
     url: http://wrex-user-correlation:5001/runModel
+  slack:
+    auth:
+      url: https://slack.com/api/oauth.access
