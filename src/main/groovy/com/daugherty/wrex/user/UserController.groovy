@@ -3,13 +3,14 @@ package com.daugherty.wrex.user
 import com.daugherty.wrex.exception.ERROR_CODE
 import com.daugherty.wrex.exception.WrexException
 import com.daugherty.wrex.tag.UserSlackService
+import groovy.util.logging.Slf4j
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-
+@Slf4j
 @RestController
 class UserController {
   private final UserManager userManager
@@ -41,7 +42,9 @@ class UserController {
   @PostMapping(value = '/users/code')
   ResponseEntity<User> postUsersCode(@RequestBody String code) {
     try {
+      log.info('Posting verification code: ' + code)
       String accessToken = userSlackService.getAccessToken(code)
+      log.info('Creating User with access code: ' + accessToken)
       User user = userManager.saveUser(new User(accessToken: accessToken))
       ResponseEntity.ok(user)
     } catch (WrexException e) {

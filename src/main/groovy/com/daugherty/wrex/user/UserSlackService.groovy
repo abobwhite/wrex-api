@@ -25,7 +25,7 @@ class UserSlackService {
                 code: code
         )
         OauthResponse oauthResponse = restTemplate.postForObject(externalConfig.slackAccessTokenUrl, oauthRequest, OathResponse)
-        log.info(oauthResponse.access_token)
+        log.info('Received OathResponse: ' + oauthResponse)
         return oauthResponse.access_token
     }
 }
