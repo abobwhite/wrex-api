@@ -57,9 +57,18 @@ class UserCorrelationProcessor {
     )
   }
 
-  private List<Long> getUserTagCounts(List<Tag> tags, List<UserTag> userTags) {
+  private List<Double> getUserTagCounts(List<Tag> tags, List<UserTag> userTags) {
     tags.collect { tag ->
-      userTags.find { it.tagId == tag.id }?.count ?: 0L
+      def count = userTags.find { it.tagId == tag.id }?.count ?: 0L
+      getCountLogBase2(count)
     }
+  }
+
+  private Double getCountLogBase2(Long count) {
+    if (!count) {
+      return 0d
+    }
+
+    (Math.log(count.toDouble()) / Math.log(2d)) + 1
   }
 }
