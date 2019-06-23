@@ -2,11 +2,11 @@ package com.daugherty.wrex.user.correlation
 
 import com.daugherty.wrex.ExternalConfig
 import com.daugherty.wrex.recommendation.RecommendationGenerator
-import com.daugherty.wrex.tag.Tag
 import com.daugherty.wrex.tag.TagManager
 import com.daugherty.wrex.user.User
 import com.daugherty.wrex.user.UserManager
 import com.daugherty.wrex.user.UserTag
+import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.util.logging.Slf4j
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
@@ -22,6 +22,8 @@ class UserCorrelationProcessor {
   private final RecommendationGenerator recommendationGenerator
   private final UserCorrelationManager userCorrelationManager
 
+  private final static MAX_NUM_TAGS_TO_CORRELATE = 10
+
   UserCorrelationProcessor(final ExternalConfig externalConfig, final RestTemplate restTemplate, final UserManager userManager, final TagManager tagManager,
                            final RecommendationGenerator recommendationGenerator, final UserCorrelationManager userCorrelationManager) {
     this.externalConfig = externalConfig
@@ -35,31 +37,33 @@ class UserCorrelationProcessor {
   @Async
   void getUserForCorrelations(User user) {
     def request = createUserCorrelationRequest(user)
-    //log.info(new ObjectMapper().writeValueAsString(request))
+    log.info("Input to User Correlation Service: ${new ObjectMapper().writeValueAsString(request)}")
     def userCorrelationResponse = restTemplate.postForObject(externalConfig.userCorrelationsUrl, request, UserCorrelationResponse)
-    //log.info(userCorrelationResponse.toString())
     createUserCorrelationsFromResponse(user, userCorrelationResponse)
     recommendationGenerator.generateRecommendations()
     log.info("Finished calculating correlations for user ${user.id}")
   }
 
   private UserCorrelationRequest createUserCorrelationRequest(User user) {
+    def topUserTags = user.userTags.sort(false) { -it.count }.collate(MAX_NUM_TAGS_TO_CORRELATE)[0]
+    def topTagIds = topUserTags.collect { it.tagId }
+
     def users = userManager.getUsers().findAll { otherUser -> otherUser.id != user.id }
-    def sortedTags = tagManager.getTags().sort { it.id }
+
     def userIdToSortedUserTagCountsMap = users.collectEntries { someUser ->
-      def userTagCounts = getUserTagCounts(sortedTags, someUser.userTags)
+      def userTagCounts = getUserTagCounts(topTagIds, someUser.userTags)
       [(someUser.id): userTagCounts]
     }
 
     def userCorrelationTrain = new UserCorrelationTrain(
-        points: sortedTags.collect { it.id },
+        points: topUserTags.collect { it.tagId },
         samples: userIdToSortedUserTagCountsMap.collect { userId, counts ->
           new UserCorrelationTrainSample(id: userId, values: counts)
         }
     )
 
     def userCorrelationTest = new UserCorrelationTest(
-        data: getUserTagCounts(sortedTags, user.userTags)
+        data: getUserTagCounts(topTagIds, user.userTags)
     )
 
     new UserCorrelationRequest(
@@ -68,9 +72,9 @@ class UserCorrelationProcessor {
     )
   }
 
-  private List<Double> getUserTagCounts(List<Tag> tags, List<UserTag> userTags) {
-    tags.collect { tag ->
-      def count = userTags.find { it.tagId == tag.id }?.count ?: 0L
+  private List<Double> getUserTagCounts(List<String> tagIds, List<UserTag> userTags) {
+    tagIds.collect { tagId ->
+      def count = userTags.find { it.tagId == tagId }?.count ?: 0L
       getCountLogBase2(count)
     }
   }

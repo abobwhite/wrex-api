@@ -23,4 +23,8 @@ class User {
   List<UserTag> userTags
   UserPreferences preferences
   String accessToken
+
+  String getFullName() {
+    "${firstName} ${lastName}"
+  }
 }

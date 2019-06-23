@@ -23,4 +23,14 @@ class TagManager {
 
     tagRepository.insert(tag)
   }
+
+  Tag findById(String id) {
+    def tag = tagRepository.findById(id).orElse(null)
+
+    if (!tag) {
+      throw new WrexException(ERROR_CODE.NOT_FOUND)
+    }
+
+    tag
+  }
 }

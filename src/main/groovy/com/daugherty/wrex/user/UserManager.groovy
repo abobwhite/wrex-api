@@ -4,6 +4,8 @@ import com.daugherty.wrex.exception.ERROR_CODE
 import com.daugherty.wrex.exception.WrexException
 import org.springframework.stereotype.Service
 
+import java.time.Instant
+
 @Service
 class UserManager {
   private final UserRepository userRepository
@@ -61,6 +63,7 @@ class UserManager {
       user.preferences = new UserPreferences()
     }
 
+    user.registrationDate = Instant.now()
     userRepository.insert(user)
   }
 
