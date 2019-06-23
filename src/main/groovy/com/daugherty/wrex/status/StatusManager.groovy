@@ -46,8 +46,8 @@ class StatusManager {
   @Scheduled(fixedDelayString = '${wrex.statusPromptDelay}')
   protected void promptUsersForStatus() {
     log.info('Prompting users for statuses')
-    userManager.getUsers().collect { it.id }.each { userId ->
-      statusPrompter.promptUserForStatus(userId)
+    userManager.getUsers().each { user ->
+      statusPrompter.promptUserForStatus(user.id)
     }
   }
 }
