@@ -1,5 +1,6 @@
 package com.daugherty.wrex.exception
 
 enum ERROR_CODE {
-  NOT_FOUND
+  NOT_FOUND,
+  INVALID
 }

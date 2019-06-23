@@ -56,6 +56,10 @@ class Recommendation {
   feedback: RECOMMENDATION_FEEDBACK
 }
 
+class Status {
+   message: string
+}
+
 enum RECOMMENDATION_FEEDBACK {
   LIKED,
   DISLIKED
@@ -76,5 +80,6 @@ User "1" *-- "many" Recommendation
 TagCategory "1" *-- "many" Tag
 UserTag "1" *-- "many" Tag
 UserTag "1" *-- "many" User
+User "1" *-- "many" Status
 
 @enduml
