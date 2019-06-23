@@ -1,6 +1,7 @@
 package com.daugherty.wrex.user.correlation
 
 import com.daugherty.wrex.ExternalConfig
+import com.daugherty.wrex.recommendation.RecommendationGenerator
 import com.daugherty.wrex.tag.Tag
 import com.daugherty.wrex.tag.TagManager
 import com.daugherty.wrex.user.User
@@ -18,12 +19,17 @@ class UserCorrelationProcessor {
   private final RestTemplate restTemplate
   private final UserManager userManager
   private final TagManager tagManager
+  private final RecommendationGenerator recommendationGenerator
+  private final UserCorrelationManager userCorrelationManager
 
-  UserCorrelationProcessor(final ExternalConfig externalConfig, final RestTemplate restTemplate, final UserManager userManager, final TagManager tagManager) {
+  UserCorrelationProcessor(final ExternalConfig externalConfig, final RestTemplate restTemplate, final UserManager userManager, final TagManager tagManager,
+                           final RecommendationGenerator recommendationGenerator, final UserCorrelationManager userCorrelationManager) {
     this.externalConfig = externalConfig
     this.restTemplate = restTemplate
     this.userManager = userManager
     this.tagManager = tagManager
+    this.recommendationGenerator = recommendationGenerator
+    this.userCorrelationManager = userCorrelationManager
   }
 
   @Async
@@ -31,7 +37,9 @@ class UserCorrelationProcessor {
     def request = createUserCorrelationRequest(user)
     //log.info(new ObjectMapper().writeValueAsString(request))
     def userCorrelationResponse = restTemplate.postForObject(externalConfig.userCorrelationsUrl, request, UserCorrelationResponse)
-    log.info(userCorrelationResponse.toString())
+    //log.info(userCorrelationResponse.toString())
+    def userCorrelations = createUserCorrelationsFromResponse(user, userCorrelationResponse)
+    recommendationGenerator.generateRecommendations(user, userCorrelations)
   }
 
   private UserCorrelationRequest createUserCorrelationRequest(User user) {
@@ -72,5 +80,36 @@ class UserCorrelationProcessor {
     }
 
     (Math.log(count.toDouble()) / Math.log(2d)) + 1
+  }
+
+  private createUserCorrelationsFromResponse(User user, UserCorrelationResponse response) {
+    Map<String, UserCorrelationTags> userToCorrelationTags = response.tags.collectEntries { tagCorrelation ->
+      def userId = tagCorrelation.keySet().getAt(0)
+      [(userId): tagCorrelation[userId]]
+    }
+
+    response.correlation.collect { userId, correlation ->
+      UserCorrelationTags tagCorrelationsForUser = userToCorrelationTags[userId]
+      Map<String, Double> tagScores = [:]
+      if (tagCorrelationsForUser) {
+        tagScores = tagCorrelationsForUser.collectEntries { String tagId, String score ->
+          [(tagId): Double.parseDouble(score)]
+        }
+      }
+
+      def userCorrelation = userCorrelationManager.findUserCorrelationForUsers(user.id, userId)
+      if (userCorrelation) {
+        userCorrelation.score = correlation
+        userCorrelation.tagScores = tagScores
+        return userCorrelationManager.updateUserCorrelation(userCorrelation)
+      } else {
+        return userCorrelationManager.createUserCorrelation(new UserCorrelation(
+            user1Id: user.id,
+            user2Id: userId,
+            score: correlation,
+            tagScores: tagScores
+        ))
+      }
+    }
   }
 }
