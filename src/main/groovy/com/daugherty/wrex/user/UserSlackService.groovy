@@ -4,7 +4,12 @@ import com.daugherty.wrex.ExternalConfig
 import com.daugherty.wrex.user.slack.OauthRequest
 import com.daugherty.wrex.user.slack.OauthResponse
 import groovy.util.logging.Slf4j
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import org.springframework.util.LinkedMultiValueMap
+import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
 
 @Slf4j
@@ -19,14 +24,19 @@ class UserSlackService {
     }
 
     String getAccessToken(String code) {
-        OauthRequest oauthRequest = new OauthRequest(
-                client_id: externalConfig.slackClientId,
-                client_secret: externalConfig.slackClientSecret,
-                code: code
-        )
-        log.info('Sending OathRequest: ' + oauthRequest)
-        Object oauthResponse = restTemplate.postForEntity(externalConfig.slackAccessTokenUrl, oauthRequest, Object)
-        log.info('Received OathResponse: ' + oauthResponse.toString())
-        return oauthResponse.access_token
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+        map.add("client_id", externalConfig.slackClientId);
+        map.add("client_secret", externalConfig.slackClientSecret);
+        map.add("code", code);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+
+        ResponseEntity<Object> response = restTemplate.postForEntity(externalConfig.slackAccessTokenUrl, request, Object);
+
+        log.info('Received OauthResponse: ' + response.toString())
+        return response.access_code
     }
 }
