@@ -16,6 +16,12 @@ class ExternalConfig {
   @Value('${wrex.slack.auth.url}')
   String slackAccessTokenUrl
 
+  @Value('${wrex.slack.auth.clientId}')
+  String slackClientId
+
+  @Value('${wrex.slack.auth.clientSecret}')
+  String slackClientSecret
+
   @Value('${wrex.slack.prompt.url}')
   String slackPromptUrl
 }

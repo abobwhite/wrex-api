@@ -19,5 +19,7 @@ wrex:
       url: http://wrex-slack-app:3000/prompt
     auth:
       url: https://slack.com/api/oauth.access
+      clientId: ${SLACK_CLIENT_ID}
+      clientSecret: ${SLACK_CLIENT_SECRET}
   statusPromptDelay: 600000
 

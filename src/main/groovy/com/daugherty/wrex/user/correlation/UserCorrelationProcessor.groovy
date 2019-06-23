@@ -7,6 +7,7 @@ import com.daugherty.wrex.user.User
 import com.daugherty.wrex.user.UserManager
 import com.daugherty.wrex.user.UserTag
 import groovy.util.logging.Slf4j
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
@@ -25,11 +26,12 @@ class UserCorrelationProcessor {
     this.tagManager = tagManager
   }
 
-  void getUserCorrelations(User user) {
+  @Async
+  void getUserForCorrelations(User user) {
     def request = createUserCorrelationRequest(user)
     //log.info(new ObjectMapper().writeValueAsString(request))
-    def nlpResponse = restTemplate.postForObject(externalConfig.userCorrelationsUrl, request, UserCorrelationResponse)
-    log.info(nlpResponse.toString())
+    def userCorrelationResponse = restTemplate.postForObject(externalConfig.userCorrelationsUrl, request, UserCorrelationResponse)
+    log.info(userCorrelationResponse.toString())
   }
 
   private UserCorrelationRequest createUserCorrelationRequest(User user) {
