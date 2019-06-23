@@ -2,9 +2,7 @@ package com.daugherty.wrex.status
 
 import com.daugherty.wrex.exception.ERROR_CODE
 import com.daugherty.wrex.exception.WrexException
-import com.daugherty.wrex.tag.StatusTagProcessor
 import com.daugherty.wrex.user.UserManager
-import com.daugherty.wrex.user.correlation.UserCorrelationProcessor
 import org.springframework.stereotype.Service
 
 @Service
@@ -32,5 +30,10 @@ class StatusManager {
     userStatusPostProcessor.process(createdStatus, user)
 
     createdStatus
+  }
+
+  List<Status> getStatusesForUser(String userId) {
+    def user = userManager.getUserById(userId) // throws if no user
+    statusRepository.findByUserId(user.id)
   }
 }

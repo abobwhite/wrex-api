@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository
 @Repository
 @RepositoryRestResource(exported = false)
 interface StatusRepository extends MongoRepository<Status, String> {
+  List<Status> findByUserId(String userId)
 }

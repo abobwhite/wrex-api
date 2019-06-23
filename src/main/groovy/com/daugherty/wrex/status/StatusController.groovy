@@ -4,10 +4,7 @@ import com.daugherty.wrex.exception.ERROR_CODE
 import com.daugherty.wrex.exception.WrexException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 class StatusController {
@@ -30,6 +27,15 @@ class StatusController {
         default:
           return ResponseEntity.badRequest().build()
       }
+    }
+  }
+
+  @GetMapping(value = '/users/{userId}/statuses')
+  ResponseEntity<List<Status>> getStatusesForUser(@PathVariable String userId) {
+    try {
+      ResponseEntity.ok(statusManager.getStatusesForUser(userId))
+    } catch (WrexException e) {
+      e.errorCode == ERROR_CODE.NOT_FOUND ? ResponseEntity.notFound().build() : ResponseEntity.badRequest().build()
     }
   }
 }
