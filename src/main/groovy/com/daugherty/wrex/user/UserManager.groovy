@@ -41,7 +41,7 @@ class UserManager {
       user.preferences = updatedUser.preferences
     }
 
-    updatedUser(user)
+    updateUser(user)
   }
 
   User createUser(User user) {
