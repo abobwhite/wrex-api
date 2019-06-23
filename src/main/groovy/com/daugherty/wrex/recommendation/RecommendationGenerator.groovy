@@ -35,6 +35,48 @@ class RecommendationGenerator {
 
   @Async
   void generateRecommendations() {
+    generateRecommendationsFromCorrelations()
+  }
+
+  @Async
+  void generateRecommendationsForMentorship() {
+    def recommendations = []
+    def allUsers = userManager.getUsers()
+    def requestingUsers = allUsers.findAll { it.requestTagIds }
+    def nonRequestingUsers = allUsers - requestingUsers
+
+    requestingUsers.each { requestingUser ->
+      requestingUser.requestTagIds.each { requestedTagId ->
+        def tag = tagManager.findById(requestedTagId)
+        if (tag.categoryConfidences) {
+          def mentorId
+          nonRequestingUsers.each { nonRequestingUser ->
+            def userIdToTagCount = [:]
+            nonRequestingUser.userTags.each { userTag ->
+              if (userTag.tagId == requestedTagId) {
+                userIdToTagCount[nonRequestingUser.id] = userTag.count
+              }
+            }
+
+            def sortedUserToCount = userIdToTagCount.sort { userToCount1, userToCount2 -> userToCount2.value <=> userToCount1.value }
+            def sortedUserIds = sortedUserToCount.collect { userId, count -> userId }
+            mentorId = sortedUserIds ? sortedUserIds[0] : null
+          }
+
+          if (mentorId) {
+            def mentor = nonRequestingUsers.find { it.id == mentorId }
+            recommendations << generateMentoringOpportunity(mentor.id, requestingUser.fullName, tag)
+            recommendations = removeDuplicateRecommendations(mentor.id, recommendations)
+          }
+        }
+      }
+    }
+
+    log.info("Creating ${recommendations.size()} recommendations for mentorship")
+    saveRecommendations(recommendations)
+  }
+
+  private void generateRecommendationsFromCorrelations() {
     def tagCategories = tagCategoryManager.getTagCategories()
     def userCorrelations = userCorrelationManager.getUserCorrelations().findAll { it.score > MINIMUM_RECOMMENDATION_SCORE }
     userCorrelations.each { userCorrelation ->
@@ -47,10 +89,7 @@ class RecommendationGenerator {
       def collatedTagIds = tagScores.collect { tagId, score -> tagId }.collate(numberToConsider)
       def topTagIds = collatedTagIds[0]
 
-      //def bottomTagIds = collatedTagIds[collatedTagIds.size() - 1]
       def recommendations = generateSharedTopTagRecommendations(topTagIds, user1, user2, tagCategories)
-
-      // TODO: Mentoring?
 
       recommendations.addAll(generatePreferenceRecommendations(user1, user2))
 
@@ -58,11 +97,16 @@ class RecommendationGenerator {
       recommendations = removeDuplicateRecommendations(user2.id, recommendations)
 
       log.info("Generating ${recommendations.size()} recommendations between users ${user1.id} and ${user2.id}")
-      recommendations.each { recommendation ->
-        recommendationManager.createRecommendation(recommendation)
-      }
+      saveRecommendations(recommendations)
     }
   }
+
+  private void saveRecommendations(List<Recommendation> recommendations) {
+    recommendations.each { recommendation ->
+      recommendationManager.createRecommendation(recommendation)
+    }
+  }
+
 
   private List<Recommendation> generateSharedTopTagRecommendations(List<String> topTagIds, User user1, User user2, List<TagCategory> tagCategories) {
     def recommendations = []
@@ -70,9 +114,9 @@ class RecommendationGenerator {
       def tag = tagManager.findById(tagId)
       if (tag.categoryConfidences) {
 
-        if(tag.categoryConfidences[0].categoryId) {
+        if (tag.categoryConfidences[0].categoryId) {
           def tagCategory = tagCategories.find { it.id == tag.categoryConfidences[0].categoryId }
-          if(tagCategory.name == 'Event') {
+          if (tagCategory.name == 'Event') {
             recommendations << generateOverlappingTagEvent(user1.id, user2.fullName, tag)
             recommendations << generateOverlappingTagEvent(user2.id, user1.fullName, tag)
           } else {
@@ -85,10 +129,6 @@ class RecommendationGenerator {
 
     recommendations
   }
-
-//  private List<Recommendation> generateTopToBottomTagRecommendations(List<String> topTagIds, User user1, User user2) {
-//
-//  }
 
   private List<Recommendation> generatePreferenceRecommendations(User user1, User user2) {
     def recommendations = []
@@ -152,6 +192,15 @@ class RecommendationGenerator {
         type: RECOMMENDATION_TYPE.EVENT,
         message: RecommendationMessages.getWeLikeTheSameEvent(otherUserFullName, tag.name),
         geneses: [new RecommendationGenesis(type: RECOMMENDATION_GENESIS_TYPE.TAG, item: tag.id)]
+    )
+  }
+
+  private Recommendation generateMentoringOpportunity(String userId, String otherUserFullName, Tag tag) {
+    new Recommendation(
+        userId: userId,
+        type: RECOMMENDATION_TYPE.MENTORSHIP,
+        message: RecommendationMessages.getMentorship(otherUserFullName, tag.name),
+        geneses: [new RecommendationGenesis(type: RECOMMENDATION_GENESIS_TYPE.REQUEST, item: tag.id)]
     )
   }
 }

@@ -16,4 +16,8 @@ class RecommendationMessages {
   static String getWeLikeTheSameEvent(String otherUserFullName, String eventName) {
     "<b>${otherUserFullName} is interested in ${eventName}. You seem to be interested too. Maybe you could travel together."
   }
+
+  static String getMentorship(String otherUserFullName, String tagName) {
+    "${otherUserFullName} is looking for help with ${tagName}. You might be able to help"
+  }
 }
