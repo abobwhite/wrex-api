@@ -41,6 +41,18 @@ class UserManager {
       user.preferences = updatedUser.preferences
     }
 
+    if(updatedUser.lineOfServiceId) {
+      user.lineOfServiceId = updatedUser.lineOfServiceId
+    }
+
+    if(updatedUser.branchId) {
+      user.branchId = updatedUser.branchId
+    }
+
+    if(updatedUser.hireDate) {
+      user.hireDate = updatedUser.hireDate
+    }
+
     updateUser(user)
   }
 
