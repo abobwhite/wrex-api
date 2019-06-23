@@ -24,7 +24,7 @@ class UserSlackService {
                 client_secret: externalConfig.slackClientSecret,
                 code: code
         )
-        OauthResponse oauthResponse = restTemplate.postForObject(externalConfig.slackAccessTokenUrl, oauthRequest, OauthResponse)
+        Object oauthResponse = restTemplate.postForEntity(externalConfig.slackAccessTokenUrl, oauthRequest, Object)
         log.info('Received OathResponse: ' + oauthResponse.toString())
         return oauthResponse.access_token
     }
