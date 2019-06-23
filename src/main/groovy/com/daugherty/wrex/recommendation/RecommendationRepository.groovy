@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository
 @RepositoryRestResource(exported = false)
 interface RecommendationRepository extends MongoRepository<Recommendation, String> {
   List<Recommendation> findByUserId(String userId)
+  List<Recommendation> findByUserIdAndDismissed(String userId, Boolean dismissed)
 }

@@ -2,6 +2,7 @@ package com.daugherty.wrex.tag
 
 import com.daugherty.wrex.ExternalConfig
 import com.daugherty.wrex.status.Status
+import com.daugherty.wrex.user.User
 import com.daugherty.wrex.user.UserManager
 import com.daugherty.wrex.user.UserTag
 import groovy.util.logging.Slf4j
@@ -23,9 +24,8 @@ class StatusTagProcessor {
     this.tagManager = tagManager
   }
 
-  void createTagsForStatus(Status status) {
+  void createTagsForStatus(Status status, User user) {
     def nlpResponse = restTemplate.postForObject(externalConfig.nlpUrl, status.message, NLPResponse)
-    def user = userManager.getUserById(status.userId)
 
     def userTags = user.userTags ?: []
     def tagNameToIdMap = tagManager.getTags().collectEntries { tag ->
@@ -53,6 +53,7 @@ class StatusTagProcessor {
 
       userManager.updateUser(user)
     }
+    log.info("User ${user.id} has ${user.userTags.size()} tags")
     log.info("Finished calculating status tags for user ${user.id}")
   }
 }

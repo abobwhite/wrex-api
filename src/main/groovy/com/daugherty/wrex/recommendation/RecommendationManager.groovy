@@ -16,24 +16,30 @@ class RecommendationManager {
     this.recommendationRepository = recommendationRepository
   }
 
-  List<Recommendation> getRecommendationsForUser(String userId) {
-    def all = recommendationRepository.findAll()
-    log.info(all.size().toString())
-    recommendationRepository.findByUserId(userId)
+  List<Recommendation> getRecommendationsForUser(String userId, Boolean showDismissed = true) {
+    if (showDismissed) {
+      return recommendationRepository.findByUserId(userId)
+    }
+
+    recommendationRepository.findByUserIdAndDismissed(userId, false)
+  }
+
+  Recommendation createRecommendation(Recommendation recommendation) {
+    recommendationRepository.insert(recommendation)
   }
 
   Recommendation modifyRecommendation(String recommendationId, Recommendation updatedRecommendation) {
     def recommendation = recommendationRepository.findById(recommendationId).orElse(null)
 
-    if(!recommendation) {
+    if (!recommendation) {
       throw new WrexException(ERROR_CODE.NOT_FOUND)
     }
 
-    if(updatedRecommendation.dismissed != null) {
+    if (updatedRecommendation.dismissed != null) {
       recommendation.dismissed = updatedRecommendation.dismissed
     }
 
-    if(updatedRecommendation.feedback) {
+    if (updatedRecommendation.feedback) {
       recommendation.feedback = updatedRecommendation.feedback
     }
 

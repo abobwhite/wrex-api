@@ -18,7 +18,7 @@ class UserStatusPostProcessor {
 
   @Async
   void process(Status status, User user) {
-    statusTagProcessor.createTagsForStatus(status)
+    statusTagProcessor.createTagsForStatus(status, user)
     userCorrelationProcessor.getUserForCorrelations(user) // TODO: Maybe on scheduled basis as data grows
   }
 }

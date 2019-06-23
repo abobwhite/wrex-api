@@ -38,8 +38,8 @@ class UserCorrelationProcessor {
     //log.info(new ObjectMapper().writeValueAsString(request))
     def userCorrelationResponse = restTemplate.postForObject(externalConfig.userCorrelationsUrl, request, UserCorrelationResponse)
     //log.info(userCorrelationResponse.toString())
-    def userCorrelations = createUserCorrelationsFromResponse(user, userCorrelationResponse)
-    recommendationGenerator.generateRecommendations(user, userCorrelations)
+    createUserCorrelationsFromResponse(user, userCorrelationResponse)
+    recommendationGenerator.generateRecommendations()
     log.info("Finished calculating correlations for user ${user.id}")
   }
 
@@ -83,13 +83,13 @@ class UserCorrelationProcessor {
     (Math.log(count.toDouble()) / Math.log(2d)) + 1
   }
 
-  private createUserCorrelationsFromResponse(User user, UserCorrelationResponse response) {
+  private void createUserCorrelationsFromResponse(User user, UserCorrelationResponse response) {
     Map<String, UserCorrelationTags> userToCorrelationTags = response.tags.collectEntries { tagCorrelation ->
       def userId = tagCorrelation.keySet().getAt(0)
       [(userId): tagCorrelation[userId]]
     }
 
-    response.correlation.collect { userId, correlation ->
+    response.correlation.each { userId, correlation ->
       UserCorrelationTags tagCorrelationsForUser = userToCorrelationTags[userId]
       Map<String, Double> tagScores = [:]
       if (tagCorrelationsForUser) {
@@ -102,9 +102,9 @@ class UserCorrelationProcessor {
       if (userCorrelation) {
         userCorrelation.score = correlation
         userCorrelation.tagScores = tagScores
-        return userCorrelationManager.updateUserCorrelation(userCorrelation)
+        userCorrelationManager.updateUserCorrelation(userCorrelation)
       } else {
-        return userCorrelationManager.createUserCorrelation(new UserCorrelation(
+        userCorrelationManager.createUserCorrelation(new UserCorrelation(
             user1Id: user.id,
             user2Id: userId,
             score: correlation,
