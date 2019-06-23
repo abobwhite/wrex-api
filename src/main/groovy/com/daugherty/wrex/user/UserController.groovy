@@ -2,6 +2,7 @@ package com.daugherty.wrex.user
 
 import com.daugherty.wrex.exception.ERROR_CODE
 import com.daugherty.wrex.exception.WrexException
+import com.daugherty.wrex.user.slack.PostUsersCodeRequest
 import groovy.util.logging.Slf4j
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -53,10 +54,10 @@ class UserController {
   }
 
   @PostMapping(value = '/users/code')
-  ResponseEntity<User> postUsersCode(@RequestBody String code) {
+  ResponseEntity<User> postUsersCode(@RequestBody PostUsersCodeRequest postUsersCodeRequest) {
     try {
-      log.info('Posting verification code: ' + code)
-      String accessToken = userSlackService.getAccessToken(code)
+      log.info('Posting verification code: ' + postUsersCodeRequest.code)
+      String accessToken = userSlackService.getAccessToken(postUsersCodeRequest.code)
       log.info('Creating User with access code: ' + accessToken)
       // TODO: NEED slackId as userId new user
       User user = userManager.createUser(new User(accessToken: accessToken))
