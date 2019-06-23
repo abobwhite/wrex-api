@@ -29,11 +29,11 @@ class StatusTagProcessor {
 
     def userTags = user.userTags ?: []
     def tagNameToIdMap = tagManager.getTags().collectEntries { tag ->
-      [(tag.name): tag.id]
+      [(tag.name.toLowerCase()): tag.id]
     }
 
     nlpResponse.words.each { word ->
-      def tagIdForWord = tagNameToIdMap[word]
+      def tagIdForWord = tagNameToIdMap[word.toLowerCase()]
       if (!tagIdForWord) {
         def newTag = tagManager.createTag(new Tag(name: word))
         userTags << new UserTag(tagId: newTag.id, count: 1)
@@ -41,9 +41,12 @@ class StatusTagProcessor {
         def userTagIndex = userTags.findIndexOf { userTag ->
           userTag.tagId == tagIdForWord
         }
-        def userTag = userTags[userTagIndex]
-        userTag.count++
-        userTags.set(userTagIndex, userTag)
+
+        if (userTagIndex > -1) {
+          def userTag = userTags[userTagIndex]
+          userTag.count++
+          userTags.set(userTagIndex, userTag)
+        }
       }
 
       user.userTags = userTags

@@ -8,3 +8,5 @@ spring:
 wrex:
   nlp:
     url: http://165.22.45.117:5000/getNouns
+  userCorrelations:
+    url: http://165.22.45.117:5001/runModel

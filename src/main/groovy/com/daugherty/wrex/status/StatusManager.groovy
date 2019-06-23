@@ -4,18 +4,19 @@ import com.daugherty.wrex.exception.ERROR_CODE
 import com.daugherty.wrex.exception.WrexException
 import com.daugherty.wrex.tag.StatusTagProcessor
 import com.daugherty.wrex.user.UserManager
+import com.daugherty.wrex.user.correlation.UserCorrelationProcessor
 import org.springframework.stereotype.Service
 
 @Service
 class StatusManager {
   private final StatusRepository statusRepository
   private final UserManager userManager
-  private final StatusTagProcessor statusTagProcessor
+  private final UserStatusPostProcessor userStatusPostProcessor
 
-  StatusManager(final StatusRepository statusRepository, final UserManager userManager, final StatusTagProcessor statusTagProcessor) {
+  StatusManager(final StatusRepository statusRepository, final UserManager userManager, final UserStatusPostProcessor userStatusPostProcessor) {
     this.statusRepository = statusRepository
     this.userManager = userManager
-    this.statusTagProcessor = statusTagProcessor
+    this.userStatusPostProcessor = userStatusPostProcessor
   }
 
   Status addStatus(String userId, Status status) {
@@ -27,7 +28,8 @@ class StatusManager {
     status.userId = user.id
 
     def createdStatus = statusRepository.insert(status)
-    statusTagProcessor.createTagsForStatus(createdStatus)
+
+    userStatusPostProcessor.process(createdStatus, user)
 
     createdStatus
   }

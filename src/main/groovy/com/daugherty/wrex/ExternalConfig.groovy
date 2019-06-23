@@ -9,4 +9,7 @@ import org.springframework.stereotype.Component
 class ExternalConfig {
   @Value('${wrex.nlp.url}')
   String nlpUrl
+
+  @Value('${wrex.userCorrelations.url}')
+  String userCorrelationsUrl
 }
