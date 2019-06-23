@@ -60,7 +60,6 @@ class UserController {
             log.info('Posting verification code: ' + postUsersCodeRequest.code)
             OauthResponse oauthResponse = userSlackService.getAccessToken(postUsersCodeRequest.code)
             log.info('Creating User with access token: ' + oauthResponse.access_token)
-            // TODO: NEED slackId as userId new user
             List<String> names = oauthResponse.user.name.split(' ')
             User user = userManager.createUser(new User(accessToken: oauthResponse.access_token, id: oauthResponse.user.id, firstName: names[0], lastName: names[1]))
             ResponseEntity.ok(user)

@@ -34,7 +34,6 @@ class UserSlackService {
         map.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers)
-        log.info(request.toString())
         ResponseEntity<OauthResponse> response = restTemplate.postForEntity(externalConfig.slackAccessTokenUrl, request, OauthResponse)
 
         log.info('Received OauthResponse: ' + response.toString())
