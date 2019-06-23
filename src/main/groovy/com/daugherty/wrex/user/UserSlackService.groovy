@@ -24,7 +24,7 @@ class UserSlackService {
         this.restTemplate = restTemplate
     }
 
-    String getAccessToken(String code) {
+    OauthResponse getAccessToken(String code) {
         HttpHeaders headers = new HttpHeaders()
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED)
 
@@ -35,9 +35,9 @@ class UserSlackService {
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers)
         log.info(request.toString())
-        ResponseEntity<Object> response = restTemplate.postForEntity(externalConfig.slackAccessTokenUrl, request, Object)
+        ResponseEntity<OauthResponse> response = restTemplate.postForEntity(externalConfig.slackAccessTokenUrl, request, OauthResponse)
 
         log.info('Received OauthResponse: ' + response.toString())
-        return response.body.access_code
+        return response.body
     }
 }
