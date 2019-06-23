@@ -38,6 +38,6 @@ class UserSlackService {
         ResponseEntity<Object> response = restTemplate.postForEntity(externalConfig.slackAccessTokenUrl, request, Object)
 
         log.info('Received OauthResponse: ' + response.toString())
-        return response.access_code
+        return response.body.access_code
     }
 }
