@@ -1,4 +1,4 @@
-package com.daugherty.wrex.tag
+package com.daugherty.wrex.user
 
 import com.daugherty.wrex.ExternalConfig
 import com.daugherty.wrex.user.slack.OauthRequest

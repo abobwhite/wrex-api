@@ -4,9 +4,9 @@ import groovy.transform.ToString
 
 @ToString
 class UserPreferences {
-  Boolean randomCoffee
-  Boolean happyHour
-  Boolean mentoring
-  Boolean mentored
-  Boolean events
+  Boolean randomCoffee = false
+  Boolean happyHour = false
+  Boolean mentoring = false
+  Boolean mentored = false
+  Boolean events = false
 }
