@@ -40,6 +40,7 @@ class UserCorrelationProcessor {
     //log.info(userCorrelationResponse.toString())
     def userCorrelations = createUserCorrelationsFromResponse(user, userCorrelationResponse)
     recommendationGenerator.generateRecommendations(user, userCorrelations)
+    log.info("Finished calculating correlations for user ${user.id}")
   }
 
   private UserCorrelationRequest createUserCorrelationRequest(User user) {

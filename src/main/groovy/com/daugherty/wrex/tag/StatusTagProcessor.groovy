@@ -53,5 +53,6 @@ class StatusTagProcessor {
 
       userManager.updateUser(user)
     }
+    log.info("Finished calculating status tags for user ${user.id}")
   }
 }

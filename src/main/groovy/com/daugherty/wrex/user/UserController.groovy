@@ -12,66 +12,74 @@ import org.springframework.web.bind.annotation.*
 @Slf4j
 @RestController
 class UserController {
-    private final UserManager userManager
-    private final UserSlackService userSlackService
+  private final UserManager userManager
+  private final UserSlackService userSlackService
 
-    UserController(final UserManager userManager, final UserSlackService userSlackService) {
-        this.userManager = userManager
-        this.userSlackService = userSlackService
-    }
+  UserController(final UserManager userManager, final UserSlackService userSlackService) {
+    this.userManager = userManager
+    this.userSlackService = userSlackService
+  }
 
-    @GetMapping(value = '/users/{userId}')
-    ResponseEntity<User> getUserById(@PathVariable userId) {
-        try {
-            ResponseEntity.ok(userManager.getUserById(userId))
-        } catch (WrexException e) {
-            e.errorCode == ERROR_CODE.NOT_FOUND ? ResponseEntity.notFound().build() : ResponseEntity.badRequest().build()
-        }
+  @GetMapping(value = '/users/{userId}')
+  ResponseEntity<User> getUserById(@PathVariable userId) {
+    try {
+      ResponseEntity.ok(userManager.getUserById(userId))
+    } catch (WrexException e) {
+      e.errorCode == ERROR_CODE.NOT_FOUND ? ResponseEntity.notFound().build() : ResponseEntity.badRequest().build()
     }
+  }
 
-    @GetMapping(value = '/users')
-    ResponseEntity<List<User>> getUsers() {
-        try {
-            ResponseEntity.ok(userManager.getUsers())
-        } catch (WrexException e) {
-            ResponseEntity.badRequest().build()
-        }
+  @GetMapping(value = '/users')
+  ResponseEntity<List<User>> getUsers() {
+    try {
+      ResponseEntity.ok(userManager.getUsers())
+    } catch (WrexException e) {
+      ResponseEntity.badRequest().build()
     }
+  }
 
-    @PatchMapping(value = '/users/{userId}')
-    ResponseEntity<User> modifyUser(@PathVariable String userId, @RequestBody User user) {
-        try {
-            ResponseEntity.ok(userManager.modifyUser(userId, user))
-        } catch (WrexException e) {
-            switch (e.errorCode) {
-                case ERROR_CODE.NOT_FOUND:
-                    return ResponseEntity.notFound().build()
-                case ERROR_CODE.INVALID:
-                    return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build()
-                default:
-                    return ResponseEntity.badRequest().build()
-            }
-        }
+  @PatchMapping(value = '/users/{userId}')
+  ResponseEntity<User> modifyUser(@PathVariable String userId, @RequestBody User user) {
+    try {
+      ResponseEntity.ok(userManager.modifyUser(userId, user))
+    } catch (WrexException e) {
+      switch (e.errorCode) {
+        case ERROR_CODE.NOT_FOUND:
+          return ResponseEntity.notFound().build()
+        case ERROR_CODE.INVALID:
+          return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build()
+        default:
+          return ResponseEntity.badRequest().build()
+      }
     }
+  }
 
-    @PostMapping(value = '/users/code')
-    ResponseEntity<User> postUsersCode(@RequestBody PostUsersCodeRequest postUsersCodeRequest) {
-        try {
-            log.info('Posting verification code: ' + postUsersCodeRequest.code)
-            OauthResponse oauthResponse = userSlackService.getAccessToken(postUsersCodeRequest.code)
-            log.info('Creating User with access token: ' + oauthResponse.access_token)
-            List<String> names = oauthResponse.user.name.split(' ')
-            User user = userManager.createUser(new User(accessToken: oauthResponse.access_token, id: oauthResponse.user.id, firstName: names[0], lastName: names[1]))
-            ResponseEntity.ok(user)
-        } catch (WrexException e) {
-            switch (e.errorCode) {
-                case ERROR_CODE.NOT_FOUND:
-                    return ResponseEntity.notFound().build()
-                case ERROR_CODE.INVALID:
-                    return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build()
-                default:
-                    return ResponseEntity.badRequest().build()
-            }
-        }
+  @PostMapping(value = '/users/code')
+  ResponseEntity<User> postUsersCode(@RequestBody PostUsersCodeRequest postUsersCodeRequest) {
+    try {
+      log.info("Posting user verification code: ${postUsersCodeRequest.code}")
+      OauthResponse oauthResponse = userSlackService.getAccessToken(postUsersCodeRequest.code)
+      def user
+      try {
+        user = userManager.getUserById(oauthResponse.user.id)
+        user.accessToken = oauthResponse.access_token
+        log.info("Logging in User with id: ${oauthResponse.user.id}")
+        user = userManager.updateUser(user)
+      } catch (WrexException e) {
+        log.info("Creating User with id: ${oauthResponse.user.id}")
+        List<String> names = oauthResponse.user.name.split(' ')
+        user = userManager.createUser(new User(accessToken: oauthResponse.access_token, id: oauthResponse.user.id, firstName: names[0], lastName: names[1]))
+      }
+      ResponseEntity.ok(user)
+    } catch (WrexException e) {
+      switch (e.errorCode) {
+        case ERROR_CODE.NOT_FOUND:
+          return ResponseEntity.notFound().build()
+        case ERROR_CODE.INVALID:
+          return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build()
+        default:
+          return ResponseEntity.badRequest().build()
+      }
     }
+  }
 }
