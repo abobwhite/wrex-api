@@ -10,6 +10,6 @@ wrex:
     url: http://165.22.45.117:5000/getNouns
   userCorrelations:
     url: http://165.22.45.117:5001/runModel
-  slack
+  slack:
     auth:
       url: https://slack.com/api/oauth.access
