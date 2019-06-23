@@ -15,5 +15,9 @@ wrex:
   userCorrelations:
     url: http://wrex-user-correlation:5001/runModel
   slack:
+    prompt:
+      url: http://wrex-slack-app:3000/prompt
     auth:
       url: https://slack.com/api/oauth.access
+  statusPromptDelay: 600000
+

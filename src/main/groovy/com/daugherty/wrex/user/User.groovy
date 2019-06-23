@@ -21,5 +21,6 @@ class User {
   String branchId
   Instant registrationDate
   List<UserTag> userTags
+  UserPreferences preferences
   String accessToken
 }
