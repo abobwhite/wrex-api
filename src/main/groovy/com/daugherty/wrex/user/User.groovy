@@ -20,4 +20,5 @@ class User {
   String lineOfServiceId
   String branchId
   Instant registrationDate
+  List<UserTag> userTags
 }

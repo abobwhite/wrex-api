@@ -25,4 +25,8 @@ class UserManager {
   List<User> getUsers() {
     userRepository.findAll()
   }
+
+  User saveUser(User user) {
+    userRepository.save(user)
+  }
 }
