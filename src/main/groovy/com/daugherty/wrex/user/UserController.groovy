@@ -4,12 +4,10 @@ import com.daugherty.wrex.exception.ERROR_CODE
 import com.daugherty.wrex.exception.WrexException
 import com.daugherty.wrex.tag.UserSlackService
 import groovy.util.logging.Slf4j
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+
 @Slf4j
 @RestController
 class UserController {
@@ -39,13 +37,29 @@ class UserController {
     }
   }
 
+  @PatchMapping(value = '/users/{userId}')
+  ResponseEntity<User> modifyUser(@PathVariable String userId, @RequestBody User user) {
+    try {
+      ResponseEntity.ok(userManager.modifyUser(userId, user))
+    } catch (WrexException e) {
+      switch (e.errorCode) {
+        case ERROR_CODE.NOT_FOUND:
+          return ResponseEntity.notFound().build()
+        case ERROR_CODE.INVALID:
+          return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build()
+        default:
+          return ResponseEntity.badRequest().build()
+      }
+    }
+  }
+
   @PostMapping(value = '/users/code')
   ResponseEntity<User> postUsersCode(@RequestBody String code) {
     try {
       log.info('Posting verification code: ' + code)
       String accessToken = userSlackService.getAccessToken(code)
       log.info('Creating User with access code: ' + accessToken)
-      User user = userManager.saveUser(new User(accessToken: accessToken))
+      User user = userManager.updateUser(new User(accessToken: accessToken))
       ResponseEntity.ok(user)
     } catch (WrexException e) {
       ResponseEntity.badRequest().build()
