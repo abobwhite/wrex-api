@@ -44,6 +44,14 @@ class UserManager {
     updatedUser(user)
   }
 
+  User createUser(User user) {
+    if(!user.preferences) {
+      user.preferences = new UserPreferences()
+    }
+
+    userRepository.insert(user)
+  }
+
   User updateUser(User user) {
     userRepository.save(user)
   }
