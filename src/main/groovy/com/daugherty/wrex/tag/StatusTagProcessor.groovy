@@ -46,6 +46,8 @@ class StatusTagProcessor {
           def userTag = userTags[userTagIndex]
           userTag.count++
           userTags.set(userTagIndex, userTag)
+        } else {
+          userTags << new UserTag(tagId: tagIdForWord, count: 1)
         }
       }
 
