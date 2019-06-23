@@ -20,8 +20,8 @@ class UserSlackService {
 
     String getAccessToken(String code) {
         OauthRequest oauthRequest = new OauthRequest(
-                client_id: System.getenv(SLACK_CLIENT_ID),
-                client_secret: System.getenv(SLACK_CLIENT_SECRET),
+                client_id: externalConfig.slackClientId,
+                client_secret: externalConfig.slackClientSecret,
                 code: code
         )
         OauthResponse oauthResponse = restTemplate.postForObject(externalConfig.slackAccessTokenUrl, oauthRequest, OauthResponse)

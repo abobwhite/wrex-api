@@ -15,7 +15,7 @@ class UserManager {
   User getUserById(String userId) {
     def user = userRepository.findById(userId).orElse(null)
 
-    if(!user) {
+    if (!user) {
       throw new WrexException(ERROR_CODE.NOT_FOUND)
     }
 
@@ -26,7 +26,25 @@ class UserManager {
     userRepository.findAll()
   }
 
-  User saveUser(User user) {
+  User modifyUser(String userId, User updatedUser) {
+    def user = getUserById(userId) // throws if not found
+
+    if (updatedUser.firstName) {
+      user.firstName = updatedUser.firstName
+    }
+
+    if (updatedUser.lastName) {
+      user.lastName = updatedUser.lastName
+    }
+
+    if (updatedUser.preferences) {
+      user.preferences = updatedUser.preferences
+    }
+
+    updatedUser(user)
+  }
+
+  User updateUser(User user) {
     userRepository.save(user)
   }
 }

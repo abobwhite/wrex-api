@@ -51,7 +51,7 @@ class StatusTagProcessor {
 
       user.userTags = userTags
 
-      userManager.saveUser(user)
+      userManager.updateUser(user)
     }
   }
 }

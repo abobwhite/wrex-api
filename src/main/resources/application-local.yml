@@ -11,5 +11,8 @@ wrex:
   userCorrelations:
     url: http://165.22.45.117:5001/runModel
   slack:
+    prompt:
+      url: http://165.22.45.117:3000/prompt
     auth:
       url: https://slack.com/api/oauth.access
+  statusPromptDelay: 10000
