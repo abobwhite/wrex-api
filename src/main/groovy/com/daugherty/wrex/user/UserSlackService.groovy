@@ -24,7 +24,7 @@ class UserSlackService {
                 client_secret: System.getenv(SLACK_CLIENT_SECRET),
                 code: code
         )
-        OauthResponse oauthResponse = restTemplate.postForObject(externalConfig.slackAccessTokenUrl, oauthRequest, OathResponse)
+        OauthResponse oauthResponse = restTemplate.postForObject(externalConfig.slackAccessTokenUrl, oauthRequest, OauthResponse)
         log.info('Received OathResponse: ' + oauthResponse)
         return oauthResponse.access_token
     }
