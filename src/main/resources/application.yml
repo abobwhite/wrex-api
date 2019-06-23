@@ -11,4 +11,4 @@ spring:
 
 wrex:
   nlp:
-    url: wrex-nlp:5000/getNouns
+    url: http://wrex-nlp:5000/getNouns
