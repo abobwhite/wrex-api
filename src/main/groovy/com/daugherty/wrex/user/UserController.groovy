@@ -2,6 +2,8 @@ package com.daugherty.wrex.user
 
 import com.daugherty.wrex.exception.ERROR_CODE
 import com.daugherty.wrex.exception.WrexException
+import com.daugherty.wrex.recommendation.RecommendationGenerator
+import com.daugherty.wrex.recommendation.RecommendationManager
 import com.daugherty.wrex.user.slack.OauthResponse
 import com.daugherty.wrex.user.slack.PostUsersCodeRequest
 import groovy.util.logging.Slf4j
@@ -14,10 +16,12 @@ import org.springframework.web.bind.annotation.*
 class UserController {
   private final UserManager userManager
   private final UserSlackService userSlackService
+  private final RecommendationGenerator recommendationGenerator
 
-  UserController(final UserManager userManager, final UserSlackService userSlackService) {
+  UserController(final UserManager userManager, final UserSlackService userSlackService, final RecommendationGenerator recommendationGenerator) {
     this.userManager = userManager
     this.userSlackService = userSlackService
+    this.recommendationGenerator = recommendationGenerator
   }
 
   @GetMapping(value = '/users/{userId}')
@@ -41,7 +45,9 @@ class UserController {
   @PatchMapping(value = '/users/{userId}')
   ResponseEntity<User> modifyUser(@PathVariable String userId, @RequestBody User user) {
     try {
-      ResponseEntity.ok(userManager.modifyUser(userId, user))
+      def response = ResponseEntity.ok(userManager.modifyUser(userId, user))
+      recommendationGenerator.generateRecommendations()
+      response
     } catch (WrexException e) {
       switch (e.errorCode) {
         case ERROR_CODE.NOT_FOUND:
