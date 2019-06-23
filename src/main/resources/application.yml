@@ -8,3 +8,7 @@ spring:
       host: wrex-db
       port: 27017
       database: wrex
+
+wrex:
+  nlp:
+    url: wrex-nlp:5000/getNouns

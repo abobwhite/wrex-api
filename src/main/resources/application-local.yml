@@ -4,3 +4,7 @@ spring:
       host: 165.22.45.117
       port: 27017
       database: wrex
+
+wrex:
+  nlp:
+    url: http://165.22.45.117:5000/getNouns
