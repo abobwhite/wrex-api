@@ -43,9 +43,10 @@ class StatusManager {
   }
 
   // NOTE: fixed DELAY ensures ordered updates - we want to wait until a synchronous request is finished before checking again
-  @Scheduled(fixedDelayString = '${wrex.statusPromptDelay}')
+  @Scheduled(fixedDelayString = '${wrex.statusPromptDelaySeconds}000')
   protected void promptUsersForStatus() {
     log.info('Prompting users for statuses')
+    // TODO: Make this smarter
     userManager.getUsers().each { user ->
       statusPrompter.promptUserForStatus(user.id)
     }
