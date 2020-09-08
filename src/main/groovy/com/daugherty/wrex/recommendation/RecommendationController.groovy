@@ -16,8 +16,9 @@ class RecommendationController {
   }
 
   @GetMapping(value = '/users/{userId}/recommendations')
-  ResponseEntity<List<Recommendation>> getRecommendationsForUser(@PathVariable String userId) {
-    ResponseEntity.ok(recommendationManager.getRecommendationsForUser(userId))
+  ResponseEntity<List<Recommendation>> getRecommendationsForUser(@PathVariable String userId,
+                                                                 @RequestParam(value = 'hideDismissed', required = false, defaultValue = "false") Boolean hideDismissed) {
+    ResponseEntity.ok(recommendationManager.getRecommendationsForUser(userId, !hideDismissed))
   }
 
   @PostMapping(value = '/recommendations/generate')

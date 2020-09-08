@@ -16,9 +16,8 @@ class Changelog_003_DefaultCategories {
       new Document([name: 'Application Framework']),
       new Document([name: 'Agile Tool']),
       new Document([name: 'Programming Language']),
-      new Document([name: 'Conference']),
+      new Document([name: 'Event']),
       new Document([name: 'Certification']),
-      new Document([name: 'Meetup']),
       new Document([name: 'Hobby']),
       new Document([name: 'IDE'])
     ])
