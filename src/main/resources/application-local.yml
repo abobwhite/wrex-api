@@ -1,17 +1,17 @@
 spring:
   data:
     mongodb:
-      host: 165.22.45.117
+      host: wrex.rocks
       port: 27017
       database: wrex
 
 wrex:
   nlp:
-    url: http://165.22.45.117:5000/getNouns
+    url: http://wrex.rocks:5000/getNouns
   userCorrelations:
-    url: http://165.22.45.117:5001/runModel
+    url: http://wrex.rocks:5001/runModel
   slack:
     prompt:
-      url: http://165.22.45.117:3000/prompt
+      url: http://wrex.rocks:3000/prompt
     auth:
       url: https://slack.com/api/oauth.access
