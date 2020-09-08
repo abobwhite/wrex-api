@@ -3,6 +3,8 @@ spring:
     mongodb:
       host: wrex.rocks
       port: 27017
+      username: ${MONGO_USERNAME}
+      password: ${MONGO_PASSWORD}
       database: wrex
 
 wrex:
