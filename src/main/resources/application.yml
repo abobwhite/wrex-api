@@ -11,6 +11,10 @@ spring:
       password: ${MONGO_PASSWORD}
       database: wrex
 
+mongock:
+  change-logs-scan-package:
+    - com.daugherty.wrex.changelog
+
 wrex:
   nlp:
     url: http://wrex-nlp:5000/getNouns
