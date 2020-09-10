@@ -52,11 +52,16 @@ class StatusManager {
   // NOTE: fixed DELAY ensures ordered updates - we want to wait until a synchronous request is finished before checking again
   @Scheduled(fixedDelayString = '${wrex.statusPromptCheckSeconds}000')
   protected void promptUsersForStatus() {
+    promptUsersForStatus(true)
+  }
+
+  void promptUsersForStatus(Boolean checkLatestStatus) {
     log.debug('Checking users for status reminders')
     def oneWeekAgo = Instant.now().minusMillis(applicationConfig.statusPromptSeconds * 1000)
     userManager.getUsers().each { user ->
       def latestStatus = getLatestStatusForUser(user.id)
-      if (!latestStatus || latestStatus.date.isBefore(oneWeekAgo)) {
+      def prompt = checkLatestStatus ? !latestStatus || latestStatus.date.isBefore(oneWeekAgo) : true
+      if (prompt) {
         log.info("Prompting user ${user.id} to give a status update")
         statusPrompter.promptUserForStatus(user.id)
       }

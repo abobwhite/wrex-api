@@ -15,5 +15,7 @@ wrex:
   slack:
     prompt:
       url: http://wrex.rocks:3000/prompt
+    recommendationNotify:
+      url: http://wrex.rocks:3000/recommendation-notify
     auth:
       url: https://slack.com/api/oauth.access
