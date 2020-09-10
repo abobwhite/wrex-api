@@ -101,8 +101,8 @@ class RecommendationGenerator {
 
       log.info("Generating ${recommendations.size()} recommendations between users ${user1.id} and ${user2.id}")
       saveRecommendations(recommendations)
-      recommendationNotifier.notifyUserOfRecommendations(user1.id, recommendations)
-      recommendationNotifier.notifyUserOfRecommendations(user2.id, recommendations)
+      recommendationNotifier.notifyUserOfRecommendations(user1.id, recommendations.findAll { it.userId == user1.id } )
+      recommendationNotifier.notifyUserOfRecommendations(user2.id, recommendations.findAll { it.userId == user2.id })
     }
   }
 
