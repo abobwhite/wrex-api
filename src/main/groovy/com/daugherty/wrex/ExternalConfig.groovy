@@ -24,4 +24,7 @@ class ExternalConfig {
 
   @Value('${wrex.slack.prompt.url}')
   String slackPromptUrl
+
+  @Value('${wrex.slack.recommendationNotify.url}')
+  String slackRecommendationNotifyUrl;
 }
