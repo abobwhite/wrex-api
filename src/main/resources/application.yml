@@ -29,6 +29,9 @@ wrex:
       url: https://slack.com/api/oauth.access
       clientId: ${SLACK_CLIENT_ID}
       clientSecret: ${SLACK_CLIENT_SECRET}
-  statusPromptSeconds: 604800
-  statusPromptCheckSeconds: 3600
+  status:
+    prompt:
+      defaultTimeSinceStatusSeconds: 604800 # 1 week
+      defaultTimeBetweenPromptsSeconds: 86400 # 1 day
+      statusPromptCheckSeconds: 3600 # 1 hour
 

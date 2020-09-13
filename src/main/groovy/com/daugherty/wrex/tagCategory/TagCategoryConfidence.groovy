@@ -1,4 +1,4 @@
-package com.daugherty.wrex.tag
+package com.daugherty.wrex.tagCategory
 
 import groovy.transform.CompileStatic
 import groovy.transform.EqualsAndHashCode

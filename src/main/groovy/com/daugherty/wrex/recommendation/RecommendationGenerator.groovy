@@ -1,8 +1,8 @@
 package com.daugherty.wrex.recommendation
 
 import com.daugherty.wrex.tag.Tag
-import com.daugherty.wrex.tag.TagCategory
-import com.daugherty.wrex.tag.TagCategoryManager
+import com.daugherty.wrex.tagCategory.TagCategory
+import com.daugherty.wrex.tagCategory.TagCategoryManager
 import com.daugherty.wrex.tag.TagManager
 import com.daugherty.wrex.user.USER_PREFERENCE
 import com.daugherty.wrex.user.User

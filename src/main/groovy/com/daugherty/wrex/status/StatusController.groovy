@@ -38,15 +38,4 @@ class StatusController {
       e.errorCode == ERROR_CODE.NOT_FOUND ? ResponseEntity.notFound().build() : ResponseEntity.badRequest().build()
     }
   }
-
-  // TODO: THIS IS JUST A TEMP ENDPOINT TO USE IN DEMOS TO SHOW WREXY PROMPT
-  @GetMapping(value = '/statuses/prompt')
-  ResponseEntity promptForStatus() {
-    try {
-      statusManager.promptUsersForStatus(false)
-      ResponseEntity.noContent().build()
-    } catch (WrexException e) {
-      new ResponseEntity(HttpStatus.I_AM_A_TEAPOT)
-    }
-  }
 }

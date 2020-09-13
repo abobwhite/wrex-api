@@ -1,4 +1,4 @@
-package com.daugherty.wrex.tag
+package com.daugherty.wrex.tagCategory
 
 import org.springframework.stereotype.Service
 
@@ -10,7 +10,7 @@ class TagCategoryManager {
     this.tagCategoryRepository = tagCategoryRepository
   }
 
-  List<TagCategory> getTagCategories() {
-    tagCategoryRepository.findAll()
+  List<TagCategory> getTagCategories(String nameFilter = null) {
+    nameFilter ? tagCategoryRepository.findByNameContainingIgnoreCase(nameFilter) : tagCategoryRepository.findAll()
   }
 }

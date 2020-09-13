@@ -1,4 +1,4 @@
-package com.daugherty.wrex
+package com.daugherty.wrex.config
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
@@ -26,5 +26,5 @@ class ExternalConfig {
   String slackPromptUrl
 
   @Value('${wrex.slack.recommendationNotify.url}')
-  String slackRecommendationNotifyUrl;
+  String slackRecommendationNotifyUrl
 }

@@ -1,6 +1,6 @@
 package com.daugherty.wrex.user.correlation
 
-import com.daugherty.wrex.ExternalConfig
+import com.daugherty.wrex.config.ExternalConfig
 import com.daugherty.wrex.recommendation.RecommendationGenerator
 import com.daugherty.wrex.tag.TagManager
 import com.daugherty.wrex.user.User

@@ -1,6 +1,6 @@
 package com.daugherty.wrex.recommendation
 
-import com.daugherty.wrex.ExternalConfig
+import com.daugherty.wrex.config.ExternalConfig
 import groovy.util.logging.Slf4j
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service

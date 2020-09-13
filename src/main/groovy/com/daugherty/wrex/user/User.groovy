@@ -24,6 +24,7 @@ class User {
   List<String> requestTagIds
   UserPreferences preferences
   String accessToken
+  Instant lastPrompted
 
   String getFullName() {
     "${firstName} ${lastName}"

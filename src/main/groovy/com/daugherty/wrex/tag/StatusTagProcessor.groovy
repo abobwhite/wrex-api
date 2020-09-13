@@ -1,6 +1,6 @@
 package com.daugherty.wrex.tag
 
-import com.daugherty.wrex.ExternalConfig
+import com.daugherty.wrex.config.ExternalConfig
 import com.daugherty.wrex.status.Status
 import com.daugherty.wrex.user.User
 import com.daugherty.wrex.user.UserManager

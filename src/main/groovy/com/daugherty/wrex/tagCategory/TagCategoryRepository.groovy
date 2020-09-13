@@ -1,4 +1,4 @@
-package com.daugherty.wrex.tag
+package com.daugherty.wrex.tagCategory
 
 import groovy.transform.CompileStatic
 import org.springframework.data.mongodb.repository.MongoRepository
@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository
 @Repository
 @RepositoryRestResource(exported = false)
 interface TagCategoryRepository extends MongoRepository<TagCategory, String> {
-
+  List<TagCategory> findByNameContainingIgnoreCase(String nameFilter)
 }
